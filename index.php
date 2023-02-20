@@ -1,3 +1,22 @@
+<?php
+session_start();
+require 'db.php';
+
+if (isset($_SESSION['user_id'])) {
+    $records = $conn->prepare('SELECT id, email, pass FROM usuarios WHERE id= :id');
+    $records->bindParam(':id', $_SESSION['user_id']);
+    $records->execute();
+    $results = $records->fetch(PDO::FETCH_ASSOC);
+
+    $user = null;
+
+    if (count($results) > 0) {
+        $user = $results;
+    }
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,11 +36,21 @@
 <?php require 'partials/header.php'; ?>
 
 <body>
-    <h1>Please login or signup</h1>
+    <?php if (!empty($user)) :  ?>
+        <br>
+        <p> Hola <?= $user['email'] ?></p>
+        <br> Te has logueado correctamente
+        <br>
+        <a href="logout.php">Logout</a>
 
-    <a href="http:login.php">Login</a>
-    or
-    <a href="http:sign.php">Sign</a>
+    <?php else :  ?>
+
+        <h1>Please login or signup</h1>
+
+        <a href="http:login.php">Login</a>
+        or
+        <a href="http:sign.php">Sign</a>
+    <?php endif;  ?>
 
 </body>
 

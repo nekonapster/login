@@ -60,7 +60,7 @@ if (
 
 
     <h1>Sign Up</h1>
-    <span>or <a href="sign.php">Login</a></span>
+    <span>or <a href="login.php">Login</a></span>
     <form action="sign.php" method="POST">
 
         <input type="text" name="user" placeholder="Enter your username*" require autofocus>

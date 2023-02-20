@@ -1,3 +1,33 @@
+<?php
+
+session_start();
+
+require 'db.php';
+
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+}
+
+
+
+if (!empty($_POST['email']) && !empty($_POST['pass'])) {
+    $records = $conn->prepare(('SELECT id, email, pass FROM usuarios WHERE email=:email'));
+    $records->bindParam(':email', $_POST['email']);
+    $records->execute();
+    $results = $records->fetch(PDO::FETCH_ASSOC);
+
+    $message = '';
+
+    if (count($results) > 0 && $results['pass'] === md5($_POST['pass'])) {
+        $_SESSION['user_id'] = $results['id'];
+        header('Location: login.php');
+    } else {
+        $message = 'Tus credenciales no coinciden con ningun usuario registrado';
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,17 +46,25 @@
 
 <body>
 
-<?php require 'partials/header.php'; ?>
+    <?php require 'partials/header.php'; ?>
 
-<h1>Login</h1>
-<span>or <a href="sign.php">Signup</a></span>
-<form action="login.php" method="POST">
+    <h1>Login</h1>
+    <span>or <a href="sign.php">Signup</a></span>
 
-<input type="text" name="email"  placeholder="Enter your email" require autofocus>
-<input type="password" name="pass"  placeholder="Enter your password" require>
-<input type="submit" value="Send">
 
-</form>
+    <?php if (!empty($message)) : ?>
+
+        <p><?= $message ?> </p>
+
+    <?php endif; ?>
+
+    <form action="login.php" method="POST">
+
+        <input type="text" name="email" placeholder="Enter your email" require autofocus>
+        <input type="password" name="pass" placeholder="Enter your password" require>
+        <input type="submit" value="Send">
+
+    </form>
 </body>
 
 </html>
